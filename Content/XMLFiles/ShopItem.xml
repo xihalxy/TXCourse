@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ShopItemList>
+    <ShopItem>
+        <ItemName>Sword</ItemName>
+        <ItemType>50</ItemType>
+        <Price>100</Price>
+        <Weight>20</Weight>
+        <Desc></Desc>
+    </ShopItem>
+</ShopItemList>
