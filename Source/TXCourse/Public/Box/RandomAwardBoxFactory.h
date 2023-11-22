@@ -39,10 +39,10 @@ public:
 
 	void SpawnAwardBox();
 	
-	//UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable)
 	void SpawnAwardBox(FTransform Transform);
 
-	UFUNCTION(BlueprintCallable)
+	//UFUNCTION(BlueprintCallable)
 	void SpawnAwardBox(FTransform Transform,FString BoxName);
 
 private:

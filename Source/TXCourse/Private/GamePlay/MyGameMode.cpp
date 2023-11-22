@@ -41,4 +41,13 @@ void AMyGameMode::AddScore(ADemoPlayerState* TargetPlayerState)
 	}
 }
 
+void AMyGameMode::AddDeath()
+{
+	if(ADemoGameStateBase* DGameState = GetGameState<ADemoGameStateBase>())
+	{
+		DGameState->SingleModeRule--;
+		if(DGameState->SingleModeRule==0) DGameState->EndGame();
+	}
+}
+
 

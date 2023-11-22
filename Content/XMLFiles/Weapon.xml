@@ -1,13 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <WeaponList>
     <Weapon>
-        <Name>testWeapon</Name>
-        <Damage>50</Damage>
-        <Healthy>100</Healthy>
-        <Cost>10</Cost>
-        <Cooldown>1</Cooldown>
-    </Weapon>
-    <Weapon>
         <Name>Sword</Name>
         <Damage>100</Damage>
         <Healthy>100</Healthy>

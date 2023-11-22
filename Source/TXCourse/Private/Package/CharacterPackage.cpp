@@ -32,7 +32,7 @@ void UPackageItem::OnRep_IsEmpty()
 UCharacterPackage::UCharacterPackage()
 {
 	//InitPackage
-	Capacity = 24;
+	Capacity = 25;
 	MoneyAmout = 0;
 	TotalWeight = 0;
 	Character = nullptr;

@@ -36,6 +36,8 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FDelay DelayForce;
+
+	FTimerHandle RebirthTimer;
 	
 private:
 	UTouchInterface *TouchInterfaceInst;

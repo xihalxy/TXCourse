@@ -30,6 +30,8 @@ public:
 
 	void AddScore(ADemoPlayerState* TargetPlayerState);
 
+	void AddDeath();
+
 	EGameMode ModeType;
 
 	int GameMaxTime;

@@ -38,17 +38,23 @@ void AMyPlayerController::SetView(FVector ScreenDistance,float Rate)
 	ScreenDistance.Z = 0;
 	float length = ScreenDistance.Length();
 	ScreenDistance.Normalize();
-	float YawRate = ScreenDistance.X*Rate*length;
-	float PitchRate = ScreenDistance.Y*Rate*length*2;
+	float YawRate = FMath::FInterpTo(0,ScreenDistance.X*Rate*length,0.5,0.3);
+	float PitchRate = FMath::FInterpTo(0,-ScreenDistance.Y*Rate*length*2,0.5,0.3);
 	APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(GetCharacter());
 	AddYawInput(YawRate);
+	AddPitchInput(PitchRate);
 	if(PlayerCharacter)
 	{
-		float Pitch = FMath::Clamp(PlayerCharacter->SpringArmComponent->GetRelativeRotation().Pitch+PitchRate,-45.f,45.f);
+		PlayerCharacter->SetAimRotator(PlayerCharacter->CameraComponent->GetComponentRotation());
+	}
+	/*if(PlayerCharacter)
+	{
+		float Pitch = FMath::FInterpTo(PlayerCharacter->SpringArmComponent->GetRelativeRotation().Pitch,PlayerCharacter->SpringArmComponent->GetRelativeRotation().Pitch+PitchRate,0.5,0.2);
+		Pitch = FMath::Clamp(Pitch,-45.f,45.f);
 		FRotator Rotation = PlayerCharacter->SpringArmComponent->GetRelativeRotation();
 		Rotation.Pitch = Pitch;
 		PlayerCharacter->SpringArmComponent->SetRelativeRotation(Rotation);
-	}
+	}*/
 }
 
 void AMyPlayerController::ReBirth()
@@ -59,11 +65,10 @@ void AMyPlayerController::ReBirth()
 	{
 		GWorld->GetGameState<ADemoGameStateBase>()->PlayerReBirth(PlayerController);
 	};
-	FTimerHandle TimerHandle;
 	FTimerDelegate TimerDelegate;
 	TimerDelegate.BindLambda(Lambda,this);
 	SetPawn(nullptr);
-	GetWorldTimerManager().SetTimer(TimerHandle,TimerDelegate,5,false);
+	GetWorldTimerManager().SetTimer(RebirthTimer,TimerDelegate,5,false);
 }
 
 void AMyPlayerController::ResetPlayer()

@@ -7,6 +7,7 @@
 #include "GamePlay/DemoGameInstance.h"
 #include "GamePlay/DemoPlayerState.h"
 #include "GamePlay/MyGameMode.h"
+#include "GamePlay/MyPlayerController.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 
@@ -14,7 +15,9 @@
 ADemoGameStateBase::ADemoGameStateBase()
 {
 	MaxTeam = 10;
+	SingleModeRule = 0;
 	ScoreMap.Init(-1,MaxTeam);
+	bIsSingleTeam = true;
 }
 
 void ADemoGameStateBase::BeginPlay()
@@ -35,6 +38,7 @@ void ADemoGameStateBase::AddPlayerState(APlayerState* PlayerState)
 		{
 			ScoreMap[DemoPlayerState->TeamID] = 0;
 		}
+		SingleModeRule++;
 	}
 }
 
@@ -72,6 +76,18 @@ void ADemoGameStateBase::EndGame()
 		GetWorldTimerManager().ClearTimer(TimeCountHandle);
 		GetGameInstance<UDemoGameInstance>()->GameStage = EGameStage::End;
 		CalcPlayerRank();
+		ClearGameTimer();
+	}
+}
+
+void ADemoGameStateBase::ClearGameTimer()
+{
+	for(APlayerState* PlayerState : PlayerArray)
+	{
+		if(AMyPlayerController* MyPlayerController = Cast<AMyPlayerController>(PlayerState->GetPlayerController()))
+		{
+			GetWorldTimerManager().ClearTimer(MyPlayerController->RebirthTimer);
+		}
 	}
 }
 
@@ -83,6 +99,25 @@ void ADemoGameStateBase::OnRep_LastTime()
 float ADemoGameStateBase::GetGameTime()
 {
 	return LastTime;
+}
+
+void ADemoGameStateBase::CheckSingleGame()
+{
+	int TotalTeamCount = 0;
+	for(int i=0;i<ScoreMap.Num();i++)
+	{
+		if(ScoreMap[i]>=0)
+		{
+			TotalTeamCount++;
+		}
+	}
+	if(TotalTeamCount == 1)
+	{
+		bIsSingleTeam = true;
+	}else
+	{
+		bIsSingleTeam = false;
+	}
 }
 
 void ADemoGameStateBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -220,7 +255,8 @@ void ADemoGameStateBase::CalcPlayerRank()
 			EndInfo.bIsValid = true;
 			EndInfo.SelfScore = DemoPlayerState->SelfScore;
 			EndInfo.TotalTime = LastTime;
-			EndInfo.bIsVictoryTeam = TeamSortIndex[ScoreMap[DemoPlayerState->TeamID]]==1 ? true : false;
+			if(bIsSingleTeam && SingleModeRule<=0) EndInfo.bIsVictoryTeam = false;
+			else EndInfo.bIsVictoryTeam = TeamSortIndex[ScoreMap[DemoPlayerState->TeamID]]==1 ? true : false;
 			EndInfo.PlayerTeamCount = TeamPlayerCount[DemoPlayerState->TeamID];
 			EndInfo.PlayerTeamScore = ScoreMap[DemoPlayerState->TeamID];
 			EndInfo.SelfTeamRank = PlayerScoreByTeam[DemoPlayerState->TeamID][DemoPlayerState->SelfScore];
@@ -243,6 +279,11 @@ void ADemoGameStateBase::CalcPlayerRank()
 
 bool ADemoGameStateBase::CheckNeedExtraTime()
 {
+	//singlemode
+	CheckSingleGame();
+	if(bIsSingleTeam) return false;
+	
+	//mulMode
 	int MaxScore = -1;
 	for(int Score : ScoreMap)
 	{

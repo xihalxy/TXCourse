@@ -86,7 +86,7 @@ void AWeaponBase::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComp, A
 void AWeaponBase::BindToPlayerCharacter(APlayerCharacter* PlayerCharacter)
 {
 	if(PlayerCharacter==nullptr) return;
-	this->BelongPlayerCharacter = PlayerCharacter;
+	BelongPlayerCharacter = PlayerCharacter;
 	BelongPlayerState = PlayerCharacter->GetPlayerState();
 }
 

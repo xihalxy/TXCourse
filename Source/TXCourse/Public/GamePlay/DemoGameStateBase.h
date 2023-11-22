@@ -31,7 +31,11 @@ public:
 
 	void EndGame();
 
+	void ClearGameTimer();
+
 	float GetGameTime();
+
+	void CheckSingleGame();
 
 	UPROPERTY(BlueprintAssignable)
 	FTimeChangeDelegate TimeChangeDelegate;
@@ -44,6 +48,8 @@ public:
 	UFUNCTION(Server,Reliable)
 	void PlayerReBirth(APlayerController* PlayerController);
 
+	int SingleModeRule;
+	
 private:
 	
 	FTimerHandle TimeCountHandle;
@@ -66,5 +72,6 @@ private:
 	
 	bool CheckNeedExtraTime();
 
+	bool bIsSingleTeam;
 	
 };

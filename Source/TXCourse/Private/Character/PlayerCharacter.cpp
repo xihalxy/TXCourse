@@ -8,6 +8,7 @@
 #include "AbilitySystemComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "Character/DAIController.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GamePlay/DemoPlayerState.h"
 #include "GamePlay/MyGameMode.h"
@@ -302,7 +303,10 @@ void APlayerCharacter::ChangeWeapon_Implementation(EArmedWeaponType NewWeaponTyp
 			break;
 		default: ;
 	}
-	weapon_r->BindToPlayerCharacter(this);
+	if(weapon_r)
+	{
+		weapon_r->BindToPlayerCharacter(this);
+	}
 	WeaponType = NewWeaponType;
 }
 
@@ -393,7 +397,7 @@ void APlayerCharacter::EnergyRecover()
 
 void APlayerCharacter::Dying()
 {
-	DebugRole();
+	//DebugRole();
 	if(ADemoPlayerState* MarkPlayerState = Cast<ADemoPlayerState>(LastHitActorPlayerState))
 	{
 		if(GetPlayerState<ADemoPlayerState>() && MarkPlayerState->TeamID==GetPlayerState<ADemoPlayerState>()->TeamID) return;
@@ -406,7 +410,16 @@ void APlayerCharacter::Dying()
 	if(AMyPlayerController* PlayerController = Cast<AMyPlayerController>(GetController()))
 	{
 		PlayerController->ReBirth();
+		if(AMyGameMode* GameMode = Cast<AMyGameMode>(UGameplayStatics::GetGameMode(this)))
+		{
+			GameMode->AddDeath();
+		}
 	}
+	if(ADAIController* AIController = Cast<ADAIController>(GetController()))
+	{
+		AIController->Destroy();
+	}
+	if(weapon_r) weapon_r->Destroy();
 }
 
 void APlayerCharacter::SetAimRotator_Implementation(FRotator NewRotator)

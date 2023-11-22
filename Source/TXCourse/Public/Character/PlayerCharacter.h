@@ -185,6 +185,9 @@ public:
 	UPROPERTY(BlueprintReadWrite,Category="CharacterScore")
 	APlayerState* LastHitActorPlayerState;
 
+	UFUNCTION(Server,Reliable)
+	void SetAimRotator(FRotator NewRotator);
+
 private:
 
 	void MoveForward(const FInputActionValue& InputValue);
@@ -202,8 +205,6 @@ private:
 
 	void Dying();
 
-	UFUNCTION(Server,Reliable)
-	void SetAimRotator(FRotator NewRotator);
 	
 	//TimerHandle
 	FTimerHandle EnergyRecoverTimer;
